@@ -15,3 +15,8 @@ Or clone the repository:
 ```bash
 git clone https://github.com/mkarmannyi-ui/ascii-movie.git
 cd ascii-movie
+```
+
+## Run
+
+ascii-movie
