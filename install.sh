@@ -2,6 +2,7 @@
 
 set -e
 
+REPO="https://raw.githubusercontent.com/mkarmannyi-ui/ascii-movie/main"
 INSTALL_DIR="$HOME/.local/share/ascii-movie"
 BIN_DIR="$HOME/.local/bin"
 
@@ -10,7 +11,9 @@ echo "Installing ascii-movie..."
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$BIN_DIR"
 
-cp movie.dat "$INSTALL_DIR/movie.dat"
+echo "Downloading movie..."
+
+curl -fL "$REPO/movie.dat" -o "$INSTALL_DIR/movie.dat"
 
 cat > "$BIN_DIR/ascii-movie" << 'EOF'
 #!/usr/bin/env python3
@@ -43,7 +46,6 @@ sys.stdout.flush()
 
 try:
     for frame in frames:
-
         lines = frame.split("\n")
         width = max(len(line) for line in lines)
 
@@ -71,13 +73,7 @@ EOF
 
 chmod +x "$BIN_DIR/ascii-movie"
 
-echo
-echo "ascii-movie installed."
-echo
-
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-    echo "Adding ~/.local/bin to PATH..."
-
     SHELL_CONFIG="$HOME/.bashrc"
 
     if [ -n "$ZSH_VERSION" ]; then
@@ -91,6 +87,11 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     export PATH="$BIN_DIR:$PATH"
 fi
 
+echo
+echo "================================"
+echo " ascii-movie installed!"
+echo "================================"
+echo
 echo "Run:"
 echo
 echo "    ascii-movie"
