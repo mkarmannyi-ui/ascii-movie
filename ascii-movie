@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import shutil
+import sys
+import time
+
+MOVIE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "movie.dat"
+)
+
+
+def main():
+    if not os.path.exists(MOVIE):
+        print("movie.dat not found.")
+        sys.exit(1)
+
+    with open(MOVIE, "r", encoding="utf-8") as f:
+        movie = json.load(f)
+
+    frames = movie["frames"]
+    fps = movie["fps"]
+    delay = 1.0 / fps
+
+    terminal = shutil.get_terminal_size()
+
+    # Clear screen and hide cursor
+    sys.stdout.write("\033[2J\033[H\033[?25l")
+    sys.stdout.flush()
+
+    try:
+        for frame in frames:
+            # Center horizontally if possible
+            lines = frame.split("\n")
+
+            max_width = max(len(line) for line in lines)
+
+            if max_width < terminal.columns:
+                left = (terminal.columns - max_width) // 2
+                frame = "\n".join(
+                    (" " * left) + line
+                    for line in lines
+                )
+
+            sys.stdout.write("\033[H")
+            sys.stdout.write(frame)
+            sys.stdout.flush()
+
+            time.sleep(delay)
+
+    except KeyboardInterrupt:
+        pass
+
+    finally:
+        # Show cursor and restore terminal
+        sys.stdout.write("\033[?25h\033[0m\n")
+        sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    main()
